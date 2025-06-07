@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕊️ Scripture Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .search-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .volume-select {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+            background: white;
+        }
+        
+        .search-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .search-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .quick-searches {
+            margin-bottom: 20px;
+        }
+        
+        .quick-searches strong {
+            display: block;
+            margin-bottom: 10px;
+            color: #666;
+        }
+        
+        .quick-search-btn {
+            background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+            border: 1px solid #dee2e6;
+            padding: 8px 16px;
+            margin: 0 8px 8px 0;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            color: #495057;
+        }
+        
+        .quick-search-btn:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .results {
+            margin-top: 20px;
+        }
+        
+        .results h3 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .result-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            transition: all 0.3s;
+        }
+        
+        .result-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .result-reference {
+            font-weight: bold;
+            color: #2c5aa0;
+            font-size: 1.1rem;
+        }
+        
+        .result-volume {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .result-text {
+            line-height: 1.6;
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+        }
+        
+        .result-meta {
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .highlight {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            color: #856404;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .loading::before {
+            content: "🔍";
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+            animation: spin 2s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .error {
+            color: #721c24;
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+            margin: 15px 0;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .no-results h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        /* Volume-specific colors */
+        .volume-old-testament { border-left-color: #3498db; }
+        .volume-new-testament { border-left-color: #2ecc71; }
+        .volume-book-of-mormon { border-left-color: #9b59b6; }
+        .volume-doctrine-and-covenants { border-left-color: #f39c12; }
+        .volume-pearl-of-great-price { border-left-color: #e74c3c; }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .search-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
+            .volume-select {
+                min-width: auto;
+            }
+            
+            .result-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕊️ Scripture Search</h1>
+            <p>Search and explore the standard works with advanced text search</p>
+        </div>
+        
+        <div class="main-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-number">{{ "{:,}".format(stats.total_verses) if stats and stats.total_verses else "0" }}</span>
+                    <div class="stat-label">Total Verses</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ stats.volumes|length if stats and stats.volumes else "0" }}</span>
+                    <div class="stat-label">Volumes</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number">{{ stats.books_per_volume.values()|sum if stats and stats.books_per_volume else "0" }}</span>
+                    <div class="stat-label">Books</div>
+                </div>
+            </div>
+            
+            <div class="search-controls">
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    id="searchInput"
+                    placeholder="Search scriptures... (e.g., 'faith hope charity', 'eternal life')"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <select class="volume-select" id="volumeSelect">
+                    <option value="all">All Volumes</option>
+                    {% if stats and stats.volumes %}
+                        {% for volume in stats.volumes %}
+                        <option value="{{ volume }}">{{ volume }}</option>
+                        {% endfor %}
+                    {% endif %}
+                </select>
+                <button class="search-btn" onclick="performSearch()" id="searchBtn">Search</button>
+            </div>
+            
+            <div class="quick-searches">
+                <strong>Quick searches:</strong>
+                <button class="quick-search-btn" onclick="quickSearch('faith hope charity')">Faith Hope Charity</button>
+                <button class="quick-search-btn" onclick="quickSearch('word of wisdom')">Word of Wisdom</button>
+                <button class="quick-search-btn" onclick="quickSearch('eternal life')">Eternal Life</button>
+                <button class="quick-search-btn" onclick="quickSearch('love thy neighbor')">Love Thy Neighbor</button>
+                <button class="quick-search-btn" onclick="quickSearch('endure to the end')">Endure to the End</button>
+            </div>
+            
+            <div class="results" id="results"></div>
+        </div>
+    </div>
+
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+        
+        function quickSearch(query) {
+            document.getElementById('searchInput').value = query;
+            performSearch();
+        }
+        
+        function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const volume = document.getElementById('volumeSelect').value;
+            const resultsDiv = document.getElementById('results');
+            const searchBtn = document.getElementById('searchBtn');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<div class="error">Please enter a search term</div>';
+                return;
+            }
+            
+            // Show loading
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+            resultsDiv.innerHTML = '<div class="loading">Searching scriptures...</div>';
+            
+            // Build search URL
+            const params = new URLSearchParams({
+                q: query,
+                volume: volume,
+                limit: 20  // Changed from 10 to 20
+            });
+            
+            // Perform search
+            fetch('/search?' + params)
+                .then(response => response.json())
+                .then(data => {
+                    displayResults(data);
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    resultsDiv.innerHTML = '<div class="error">Search failed. Please try again.</div>';
+                })
+                .finally(() => {
+                    searchBtn.disabled = false;
+                    searchBtn.textContent = 'Search';
+                });
+        }
+        
+        function displayResults(data) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (data.error) {
+                resultsDiv.innerHTML = '<div class="error">' + data.error + '</div>';
+                return;
+            }
+            
+            if (!data.results || data.results.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div class="no-results">
+                        <h3>No results found for "${data.query}"</h3>
+                        <p>Try adjusting your search terms or searching in a different volume.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '<h3>Found ' + data.total_results + ' results for "' + data.query + '"';
+            if (data.volume !== 'all') {
+                html += ' in ' + data.volume;
+            }
+            html += '</h3>';
+            
+            data.results.forEach(function(result, index) {
+                const volumeClass = result.volume.toLowerCase().replace(/\s+/g, '-');
+                const highlightedText = highlightSearchTerms(result.text, data.query);
+                
+                html += `
+                    <div class="result-item volume-${volumeClass}">
+                        <div class="result-header">
+                            <span class="result-reference">${result.reference}</span>
+                            <span class="result-volume">${result.volume}</span>
+                        </div>
+                        <div class="result-text">${highlightedText}</div>
+                        <div class="result-meta">
+                            <span>Match: ${result.match_type} | Score: ${result.score}</span>
+                            ${result.lds_url ? '<a href="' + buildLDSUrl(result) + '" target="_blank">📖 Read on ChurchofJesusChrist.org</a>' : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function highlightSearchTerms(text, query) {
+            const words = query.toLowerCase().split(' ');
+            let highlightedText = text;
+            
+            words.forEach(word => {
+                if (word.length > 2) {
+                    const regex = new RegExp('(' + escapeRegex(word) + ')', 'gi');
+                    highlightedText = highlightedText.replace(regex, '<span class="highlight">$1</span>');
+                }
+            });
+            
+            return highlightedText;
+        }
+        
+        function buildLDSUrl(result) {
+            // Fix incomplete URLs from the CSV data
+            let baseUrl = 'https://www.churchofjesuschrist.org/study/scriptures/';
+            
+            // Map volume to URL path
+            const volumeMap = {
+                'Old Testament': 'ot',
+                'New Testament': 'nt', 
+                'Book of Mormon': 'bofm',
+                'Doctrine and Covenants': 'dc-testament',
+                'Pearl of Great Price': 'pgp'
+            };
+            
+            const volumePath = volumeMap[result.volume];
+            if (!volumePath) return '#';
+            
+            // Build book abbreviation from book name
+            let bookAbbrev = '';
+            if (result.volume === 'Doctrine and Covenants') {
+                bookAbbrev = 'dc';  // Just 'dc', not 'dc/dc'
+            } else if (result.volume === 'Book of Mormon') {
+                // Map Book of Mormon books
+                const bomBooks = {
+                    '1 Nephi': '1-ne',
+                    '2 Nephi': '2-ne', 
+                    '3 Nephi': '3-ne',
+                    '4 Nephi': '4-ne',
+                    'Jacob': 'jacob',
+                    'Enos': 'enos',
+                    'Jarom': 'jarom',
+                    'Omni': 'omni',
+                    'Words of Mormon': 'w-of-m',
+                    'Mosiah': 'mosiah',
+                    'Alma': 'alma',
+                    'Helaman': 'hel',
+                    'Mormon': 'morm',
+                    'Ether': 'ether',
+                    'Moroni': 'moro'
+                };
+                bookAbbrev = bomBooks[result.book] || result.book.toLowerCase().replace(/\s+/g, '-');
+            } else if (result.volume === 'Pearl of Great Price') {
+                // Map Pearl of Great Price books
+                const pgpBooks = {
+                    'Moses': 'moses',
+                    'Abraham': 'abr',
+                    'Joseph Smith—Matthew': 'js-m',
+                    'Joseph Smith—History': 'js-h',
+                    'Articles of Faith': 'a-of-f'
+                };
+                bookAbbrev = pgpBooks[result.book] || result.book.toLowerCase().replace(/\s+/g, '-');
+            } else {
+                // For Bible books, use simple abbreviation
+                const bibleBooks = {
+                    'Genesis': 'gen',
+                    'Exodus': 'ex',
+                    'Leviticus': 'lev',
+                    'Numbers': 'num',
+                    'Deuteronomy': 'deut',
+                    'Joshua': 'josh',
+                    'Judges': 'judg',
+                    'Ruth': 'ruth',
+                    '1 Samuel': '1-sam',
+                    '2 Samuel': '2-sam',
+                    '1 Kings': '1-kgs',
+                    '2 Kings': '2-kgs',
+                    '1 Chronicles': '1-chr',
+                    '2 Chronicles': '2-chr',
+                    'Ezra': 'ezra',
+                    'Nehemiah': 'neh',
+                    'Esther': 'esth',
+                    'Job': 'job',
+                    'Psalms': 'ps',
+                    'Proverbs': 'prov',
+                    'Ecclesiastes': 'eccl',
+                    'Song of Solomon': 'song',
+                    'Isaiah': 'isa',
+                    'Jeremiah': 'jer',
+                    'Lamentations': 'lam',
+                    'Ezekiel': 'ezek',
+                    'Daniel': 'dan',
+                    'Hosea': 'hosea',
+                    'Joel': 'joel',
+                    'Amos': 'amos',
+                    'Obadiah': 'obad',
+                    'Jonah': 'jonah',
+                    'Micah': 'micah',
+                    'Nahum': 'nahum',
+                    'Habakkuk': 'hab',
+                    'Zephaniah': 'zeph',
+                    'Haggai': 'hag',
+                    'Zechariah': 'zech',
+                    'Malachi': 'mal',
+                    'Matthew': 'matt',
+                    'Mark': 'mark',
+                    'Luke': 'luke',
+                    'John': 'john',
+                    'Acts': 'acts',
+                    'Romans': 'rom',
+                    '1 Corinthians': '1-cor',
+                    '2 Corinthians': '2-cor',
+                    'Galatians': 'gal',
+                    'Ephesians': 'eph',
+                    'Philippians': 'philip',
+                    'Colossians': 'col',
+                    '1 Thessalonians': '1-thes',
+                    '2 Thessalonians': '2-thes',
+                    '1 Timothy': '1-tim',
+                    '2 Timothy': '2-tim',
+                    'Titus': 'titus',
+                    'Philemon': 'philem',
+                    'Hebrews': 'heb',
+                    'James': 'james',
+                    '1 Peter': '1-pet',
+                    '2 Peter': '2-pet',
+                    '1 John': '1-jn',
+                    '2 John': '2-jn',
+                    '3 John': '3-jn',
+                    'Jude': 'jude',
+                    'Revelation': 'rev'
+                };
+                bookAbbrev = bibleBooks[result.book] || result.book.toLowerCase().replace(/\s+/g, '-');
+            }
+            
+            return `${baseUrl}${volumePath}/${bookAbbrev}/${result.chapter}?lang=eng#p${result.verse}`;
+        }
+        
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        
+        // Auto-focus search input when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('searchInput').focus();
+        });
+    </script>
+</body>
+</html>
