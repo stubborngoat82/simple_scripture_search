@@ -252,6 +252,128 @@
             to { transform: rotate(360deg); }
         }
         
+        .reference-indicator {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .result-item.reference-result {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
+        }
+
+        .reference-section {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d1ecf1 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .reference-section h3 {
+            color: #0c5460;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .reference-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .book-select {
+            flex: 2;
+            min-width: 200px;
+            padding: 10px 12px;
+            border: 2px solid #bee5eb;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+        }
+        
+        .chapter-input, .verse-input {
+            width: 80px;
+            padding: 10px 8px;
+            border: 2px solid #bee5eb;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+        
+        .verse-separator {
+            color: #6c757d;
+            font-weight: 500;
+            margin: 0 5px;
+        }
+        
+        .lookup-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .lookup-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+        }
+        
+        .lookup-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .reference-examples {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .ref-quick-btn {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ref-quick-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+        }
+        
+        /* Responsive design for reference section */
+        @media (max-width: 768px) {
+            .reference-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .book-select {
+                min-width: auto;
+            }
+            
+            .chapter-input, .verse-input {
+                width: 100px;
+            }
+        }
         .error {
             color: #721c24;
             background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
@@ -331,7 +453,130 @@
                     <div class="stat-label">Books</div>
                 </div>
             </div>
-            
+            <!-- Reference Lookup Section -->
+            <div class="reference-section">
+                <h3>📖 Scripture Reference Lookup</h3>
+                <div class="reference-controls">
+                    <select class="book-select" id="bookSelect">
+                        <option value="">Select Book...</option>
+                        <optgroup label="Old Testament">
+                            <option value="Genesis">Genesis</option>
+                            <option value="Exodus">Exodus</option>
+                            <option value="Leviticus">Leviticus</option>
+                            <option value="Numbers">Numbers</option>
+                            <option value="Deuteronomy">Deuteronomy</option>
+                            <option value="Joshua">Joshua</option>
+                            <option value="Judges">Judges</option>
+                            <option value="Ruth">Ruth</option>
+                            <option value="1 Samuel">1 Samuel</option>
+                            <option value="2 Samuel">2 Samuel</option>
+                            <option value="1 Kings">1 Kings</option>
+                            <option value="2 Kings">2 Kings</option>
+                            <option value="1 Chronicles">1 Chronicles</option>
+                            <option value="2 Chronicles">2 Chronicles</option>
+                            <option value="Ezra">Ezra</option>
+                            <option value="Nehemiah">Nehemiah</option>
+                            <option value="Esther">Esther</option>
+                            <option value="Job">Job</option>
+                            <option value="Psalms">Psalms</option>
+                            <option value="Proverbs">Proverbs</option>
+                            <option value="Ecclesiastes">Ecclesiastes</option>
+                            <option value="Song of Solomon">Song of Solomon</option>
+                            <option value="Isaiah">Isaiah</option>
+                            <option value="Jeremiah">Jeremiah</option>
+                            <option value="Lamentations">Lamentations</option>
+                            <option value="Ezekiel">Ezekiel</option>
+                            <option value="Daniel">Daniel</option>
+                            <option value="Hosea">Hosea</option>
+                            <option value="Joel">Joel</option>
+                            <option value="Amos">Amos</option>
+                            <option value="Obadiah">Obadiah</option>
+                            <option value="Jonah">Jonah</option>
+                            <option value="Micah">Micah</option>
+                            <option value="Nahum">Nahum</option>
+                            <option value="Habakkuk">Habakkuk</option>
+                            <option value="Zephaniah">Zephaniah</option>
+                            <option value="Haggai">Haggai</option>
+                            <option value="Zechariah">Zechariah</option>
+                            <option value="Malachi">Malachi</option>
+                        </optgroup>
+                        <optgroup label="New Testament">
+                            <option value="Matthew">Matthew</option>
+                            <option value="Mark">Mark</option>
+                            <option value="Luke">Luke</option>
+                            <option value="John">John</option>
+                            <option value="Acts">Acts</option>
+                            <option value="Romans">Romans</option>
+                            <option value="1 Corinthians">1 Corinthians</option>
+                            <option value="2 Corinthians">2 Corinthians</option>
+                            <option value="Galatians">Galatians</option>
+                            <option value="Ephesians">Ephesians</option>
+                            <option value="Philippians">Philippians</option>
+                            <option value="Colossians">Colossians</option>
+                            <option value="1 Thessalonians">1 Thessalonians</option>
+                            <option value="2 Thessalonians">2 Thessalonians</option>
+                            <option value="1 Timothy">1 Timothy</option>
+                            <option value="2 Timothy">2 Timothy</option>
+                            <option value="Titus">Titus</option>
+                            <option value="Philemon">Philemon</option>
+                            <option value="Hebrews">Hebrews</option>
+                            <option value="James">James</option>
+                            <option value="1 Peter">1 Peter</option>
+                            <option value="2 Peter">2 Peter</option>
+                            <option value="1 John">1 John</option>
+                            <option value="2 John">2 John</option>
+                            <option value="3 John">3 John</option>
+                            <option value="Jude">Jude</option>
+                            <option value="Revelation">Revelation</option>
+                        </optgroup>
+                        <optgroup label="Book of Mormon">
+                            <option value="1 Nephi">1 Nephi</option>
+                            <option value="2 Nephi">2 Nephi</option>
+                            <option value="Jacob">Jacob</option>
+                            <option value="Enos">Enos</option>
+                            <option value="Jarom">Jarom</option>
+                            <option value="Omni">Omni</option>
+                            <option value="Words of Mormon">Words of Mormon</option>
+                            <option value="Mosiah">Mosiah</option>
+                            <option value="Alma">Alma</option>
+                            <option value="Helaman">Helaman</option>
+                            <option value="3 Nephi">3 Nephi</option>
+                            <option value="4 Nephi">4 Nephi</option>
+                            <option value="Mormon">Mormon</option>
+                            <option value="Ether">Ether</option>
+                            <option value="Moroni">Moroni</option>
+                        </optgroup>
+                        <optgroup label="Doctrine and Covenants">
+                            <option value="Doctrine and Covenants">Doctrine and Covenants</option>
+                        </optgroup>
+                        <optgroup label="Pearl of Great Price">
+                            <option value="Moses">Moses</option>
+                            <option value="Abraham">Abraham</option>
+                            <option value="Joseph Smith—Matthew">Joseph Smith—Matthew</option>
+                            <option value="Joseph Smith—History">Joseph Smith—History</option>
+                            <option value="Articles of Faith">Articles of Faith</option>
+                        </optgroup>
+                    </select>
+                    
+                    <input type="number" class="chapter-input" id="chapterInput" placeholder="Chapter" min="1" max="150">
+                    
+                    <input type="number" class="verse-input" id="verseStart" placeholder="Verse" min="1" max="176">
+                    
+                    <span class="verse-separator">to</span>
+                    
+                    <input type="number" class="verse-input" id="verseEnd" placeholder="End" min="1" max="176">
+                    
+                    <button class="lookup-btn" onclick="performReferenceLookup()" id="lookupBtn">Look Up</button>
+                </div>
+                
+                <div class="reference-examples">
+                    <span class="ref-quick-btn" onclick="quickReference('John', 3, 16)">John 3:16</span>
+                    <span class="ref-quick-btn" onclick="quickReference('1 Nephi', 1, 1)">1 Nephi 1:1</span>
+                    <span class="ref-quick-btn" onclick="quickReference('Doctrine and Covenants', 76)">D&C 76</span>
+                    <span class="ref-quick-btn" onclick="quickReference('Alma', 32, 21, 23)">Alma 32:21-23</span>
+                    <span class="ref-quick-btn" onclick="quickReference('Moroni', 10, 4)">Moroni 10:4</span>
+                </div>
+            </div>
             <div class="search-controls">
                 <input 
                     type="text" 
@@ -375,7 +620,111 @@
             document.getElementById('searchInput').value = query;
             performSearch();
         }
+        function quickReference(book, chapter, verseStart, verseEnd) {
+            document.getElementById('bookSelect').value = book;
+            document.getElementById('chapterInput').value = chapter;
+            document.getElementById('verseStart').value = verseStart;
+            if (verseEnd) {
+                document.getElementById('verseEnd').value = verseEnd;
+            } else {
+                document.getElementById('verseEnd').value = '';
+            }
+            performReferenceLookup();
+        }
         
+        function performReferenceLookup() {
+            const book = document.getElementById('bookSelect').value;
+            const chapter = document.getElementById('chapterInput').value;
+            const verseStart = document.getElementById('verseStart').value;
+            const verseEnd = document.getElementById('verseEnd').value;
+            const resultsDiv = document.getElementById('results');
+            const lookupBtn = document.getElementById('lookupBtn');
+            
+            if (!book || !chapter) {
+                resultsDiv.innerHTML = '<div class="error">Please select a book and enter a chapter number</div>';
+                return;
+            }
+            
+            // Build reference query
+            let query = `${book} ${chapter}`;
+            if (verseStart) {
+                query += `:${verseStart}`;
+                if (verseEnd && verseEnd !== verseStart) {
+                    query += `-${verseEnd}`;
+                }
+            }
+            
+            // Show loading
+            lookupBtn.disabled = true;
+            lookupBtn.textContent = 'Looking up...';
+            resultsDiv.innerHTML = '<div class="loading">Looking up scripture reference...</div>';
+            
+            // Use the regular search endpoint
+            const params = new URLSearchParams({
+                q: query,
+                volume: 'all',
+                limit: 50
+            });
+            
+            fetch('/search?' + params)
+                .then(response => response.json())
+                .then(data => {
+                    displayReferenceResults(data, query);
+                })
+                .catch(error => {
+                    console.error('Reference lookup error:', error);
+                    resultsDiv.innerHTML = '<div class="error">Reference lookup failed. Please try again.</div>';
+                })
+                .finally(() => {
+                    lookupBtn.disabled = false;
+                    lookupBtn.textContent = 'Look Up';
+                });
+        }
+        
+        function displayReferenceResults(data, originalQuery) {
+    const resultsDiv = document.getElementById('results');
+    
+    if (data.error) {
+        resultsDiv.innerHTML = '<div class="error">' + data.error + '</div>';
+        return;
+    }
+    
+    if (!data.results || data.results.length === 0) {
+        resultsDiv.innerHTML = `
+            <div class="no-results">
+                <h3>No results found for "${originalQuery}"</h3>
+                <p>Please check the book name, chapter, and verse numbers.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let html = '<div class="reference-indicator">📖 Scripture Reference Lookup</div>';
+    html += '<h3>📖 ' + originalQuery + ' (' + data.total_results + ' verses)</h3>';
+    
+    data.results.forEach(function(result, index) {
+        const volumeClass = result.volume.toLowerCase().replace(/\s+/g, '-');
+        
+        html += `
+            <div class="result-item reference-result volume-${volumeClass}">
+                <div class="result-header">
+                    <span class="result-reference">${result.reference}</span>
+                    <span class="result-volume">${result.volume}</span>
+                </div>
+                <div class="result-text">${result.text}</div>
+                <div class="result-meta">
+                    <span>Reference Lookup</span>
+                    ${result.lds_url ? '<a href="' + buildLDSUrl(result) + '" target="_blank">📖 Read on ChurchofJesusChrist.org</a>' : ''}
+                </div>
+            </div>
+        `;
+    });
+    
+    resultsDiv.innerHTML = html;
+}
+        
+     
+
         function performSearch() {
             const query = document.getElementById('searchInput').value.trim();
             const volume = document.getElementById('volumeSelect').value;

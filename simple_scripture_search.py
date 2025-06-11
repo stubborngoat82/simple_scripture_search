@@ -24,12 +24,151 @@ class ScriptureVerse:
     verse_id: int = None
     lds_url: str = None
 
+class ScriptureReferenceParser:
+    """Simple parser for scripture references like 'John 3:16', '1 Nephi 1:1-10', etc."""
+    
+    def __init__(self):
+        # Basic book name mappings for common abbreviations
+        self.book_mappings = {
+            # Bible - New Testament
+            'matt': 'Matthew', 'matthew': 'Matthew', 'mt': 'Matthew',
+            'mark': 'Mark', 'mk': 'Mark',
+            'luke': 'Luke', 'lk': 'Luke',
+            'john': 'John', 'jn': 'John',
+            'acts': 'Acts',
+            'rom': 'Romans', 'romans': 'Romans',
+            '1cor': '1 Corinthians', '1 cor': '1 Corinthians',
+            '2cor': '2 Corinthians', '2 cor': '2 Corinthians',
+            'gal': 'Galatians', 'galatians': 'Galatians',
+            'eph': 'Ephesians', 'ephesians': 'Ephesians',
+            'phil': 'Philippians', 'philippians': 'Philippians',
+            'col': 'Colossians', 'colossians': 'Colossians',
+            'heb': 'Hebrews', 'hebrews': 'Hebrews',
+            'james': 'James', 'jas': 'James',
+            '1pet': '1 Peter', '1 peter': '1 Peter',
+            '2pet': '2 Peter', '2 peter': '2 Peter',
+            'rev': 'Revelation', 'revelation': 'Revelation',
+            
+            # Bible - Old Testament  
+            'gen': 'Genesis', 'genesis': 'Genesis',
+            'ex': 'Exodus', 'exodus': 'Exodus',
+            'ps': 'Psalms', 'psalm': 'Psalms', 'psalms': 'Psalms',
+            'prov': 'Proverbs', 'proverbs': 'Proverbs',
+            'isa': 'Isaiah', 'isaiah': 'Isaiah',
+            'jer': 'Jeremiah', 'jeremiah': 'Jeremiah',
+            'dan': 'Daniel', 'daniel': 'Daniel',
+            
+            # Book of Mormon
+            '1ne': '1 Nephi', '1 ne': '1 Nephi', '1 nephi': '1 Nephi', '1nephi': '1 Nephi',
+            '2ne': '2 Nephi', '2 ne': '2 Nephi', '2 nephi': '2 Nephi', '2nephi': '2 Nephi',
+            '3ne': '3 Nephi', '3 ne': '3 Nephi', '3 nephi': '3 Nephi', '3nephi': '3 Nephi',
+            '4ne': '4 Nephi', '4 ne': '4 Nephi', '4 nephi': '4 Nephi', '4nephi': '4 Nephi',
+            'jacob': 'Jacob', 'enos': 'Enos', 'jarom': 'Jarom', 'omni': 'Omni',
+            'mosiah': 'Mosiah', 'alma': 'Alma', 'hel': 'Helaman', 'helaman': 'Helaman',
+            'mormon': 'Mormon', 'morm': 'Mormon', 'ether': 'Ether', 'moroni': 'Moroni', 'moro': 'Moroni',
+            
+            # Doctrine and Covenants
+            'dc': 'Doctrine and Covenants', 'd&c': 'Doctrine and Covenants', 'dnc': 'Doctrine and Covenants',
+            'doctrine and covenants': 'Doctrine and Covenants',
+\
+            # Pearl of Great Price
+            'moses': 'Moses', 'abr': 'Abraham', 'abraham': 'Abraham',
+            'jsm': 'Joseph Smith—Matthew', 'js-m': 'Joseph Smith—Matthew',
+            'jsh': 'Joseph Smith—History', 'js-h': 'Joseph Smith—History',
+        }
+    
+    def is_reference_query(self, query):
+        """Check if a query looks like a scripture reference"""
+        import re
+        # Look for patterns like "Book Chapter:Verse" or "Book Chapter"
+        patterns = [
+            r'^\w+.*?\s+\d+:\d+',      # Book Chapter:Verse
+            r'^\w+.*?\s+\d+$',         # Book Chapter
+            r'^\d+\s+\w+.*?\s+\d+',    # Number Book Chapter (e.g., "1 Nephi 1")
+        ]
+        
+        for pattern in patterns:
+            if re.match(pattern, query.strip(), re.IGNORECASE):
+                return True
+        return False
+    
+    def parse_reference(self, reference):
+        """
+        Parse a scripture reference and return search parameters.
+        
+        Examples:
+        - "John 3:16" -> [{'book': 'John', 'chapter': 3, 'verse': 16}]
+        - "1 Nephi 1" -> [{'book': '1 Nephi', 'chapter': 1}]
+        - "Alma 32:21-23" -> [{'book': 'Alma', 'chapter': 32, 'verse_start': 21, 'verse_end': 23}]
+        """
+        import re
+        reference = reference.strip()
+        
+        # Try different reference patterns
+        patterns = [
+            # Pattern: "Book Chapter:Verse-Verse" (e.g., "John 3:16-17")
+            r'^(.+?)\s+(\d+):(\d+)-(\d+)$',
+            # Pattern: "Book Chapter:Verse" (e.g., "John 3:16")
+            r'^(.+?)\s+(\d+):(\d+)$',
+            # Pattern: "Book Chapter" (e.g., "John 3")
+            r'^(.+?)\s+(\d+)$',
+        ]
+        
+        for pattern in patterns:
+            match = re.match(pattern, reference, re.IGNORECASE)
+            if match:
+                groups = match.groups()
+                book_name = groups[0].strip()
+                
+                # Normalize book name
+                normalized_book = self.normalize_book_name(book_name)
+                if not normalized_book:
+                    continue
+                
+                result = {'book': normalized_book}
+                
+                if len(groups) >= 2:  # Has chapter
+                    result['chapter'] = int(groups[1])
+                
+                if len(groups) >= 3:  # Has verse
+                    result['verse'] = int(groups[2])
+                
+                if len(groups) >= 4:  # Has verse range
+                    result['verse_start'] = int(groups[2])
+                    result['verse_end'] = int(groups[3])
+                    del result['verse']  # Remove single verse
+                
+                return [result]
+        
+        return []
+    
+    def normalize_book_name(self, book_name):
+        """Normalize book name using mappings"""
+        book_lower = book_name.lower().strip()
+        
+        # Direct mapping
+        if book_lower in self.book_mappings:
+            return self.book_mappings[book_lower]
+        
+        # Try without spaces/punctuation
+        book_clean = re.sub(r'[^\w]', '', book_lower)
+        if book_clean in self.book_mappings:
+            return self.book_mappings[book_clean]
+        
+        # Try partial matches for longer names
+        for abbrev, full_name in self.book_mappings.items():
+            if book_lower == full_name.lower():
+                return full_name
+        
+        return None
+    
 class SimpleScriptureSearch:
     def __init__(self, db_path: str = "simple_scriptures.db"):
         self.db_path = db_path
         self.conn = sqlite3.connect(db_path)
         self.setup_database()
         self.verses = []
+        self.reference_parser = ScriptureReferenceParser()
         
     def setup_database(self):
         """Create the database schema"""
@@ -165,7 +304,26 @@ class SimpleScriptureSearch:
         return len(verses)
     
     def search_text(self, query: str, limit: int = 20, volume_filter: str = None) -> List[Dict]:
-        """Advanced text search with multiple strategies"""
+        """Enhanced text search with reference parsing"""
+        
+        # Check if query looks like a scripture reference
+        if self.reference_parser.is_reference_query(query):
+            print(f"🔍 Detected reference query: '{query}'")
+            reference_params_list = self.reference_parser.parse_reference(query)
+            
+            if reference_params_list:
+                reference_params = reference_params_list[0]
+                print(f"📖 Parsed reference: {reference_params}")
+                results = self.search_by_reference(reference_params)
+                if results:
+                    print(f"✅ Found {len(results)} verses for reference")
+                    return results
+                else:
+                    print(f"❌ No verses found for reference '{query}', falling back to text search")
+            else:
+                print(f"⚠️  Could not parse reference '{query}', falling back to text search")
+        
+        # Regular text search (your existing code)
         cursor = self.conn.cursor()
         
         # Clean and prepare query
@@ -440,6 +598,64 @@ class SimpleScriptureSearch:
             else:
                 print("Unknown command. Use 'search <query>', 'filter <volume> <query>', 'stats', or 'quit'")
 
+    def search_by_reference(self, reference_params):
+        """Search by specific scripture reference"""
+        cursor = self.conn.cursor()
+        
+        # Build SQL query based on reference parameters
+        sql = 'SELECT volume, book, chapter, verse, text, volume_id, book_id, verse_id, lds_url FROM scriptures WHERE book = ?'
+        params = [reference_params['book']]
+        
+        if 'chapter' in reference_params:
+            sql += ' AND chapter = ?'
+            params.append(reference_params['chapter'])
+        
+        if 'verse' in reference_params:
+            sql += ' AND verse = ?'
+            params.append(reference_params['verse'])
+        elif 'verse_start' in reference_params and 'verse_end' in reference_params:
+            sql += ' AND verse BETWEEN ? AND ?'
+            params.extend([reference_params['verse_start'], reference_params['verse_end']])
+        
+        sql += ' ORDER BY chapter, verse'
+        
+        cursor.execute(sql, params)
+        results = []
+        
+        for row in cursor.fetchall():
+            results.append({
+                'volume': row[0], 'book': row[1], 'chapter': row[2], 'verse': row[3],
+                'text': row[4], 'volume_id': row[5], 'book_id': row[6], 'verse_id': row[7],
+                'lds_url': row[8], 'reference': f"{row[1]} {row[2]}:{row[3]}",
+                'match_type': 'reference_lookup', 'relevance_score': 100.0
+            })
+        
+        return results
+
+def test_references():
+    """Test the reference search functionality"""
+    search = SimpleScriptureSearch()
+    
+    # Test some references
+    test_refs = ["John 3:16", "1 Nephi 1:1", "D&C 76", "Alma 32:21-23"]
+    
+    for ref in test_refs:
+        print(f"\n🔍 Testing: {ref}")
+        if search.reference_parser.is_reference_query(ref):
+            parsed = search.reference_parser.parse_reference(ref)
+            if parsed:
+                results = search.search_by_reference(parsed[0])
+                print(f"   Found {len(results)} results")
+                for result in results[:2]:  # Show first 2
+                    print(f"   📖 {result['reference']}: {result['text'][:100]}...")
+            else:
+                print("   ❌ Could not parse reference")
+        else:
+            print("   ⚠️  Not detected as reference")
+
+# Uncomment this line to test:
+test_references()
+
 def main():
     """Main function"""
     print("🔍 Simple Scripture Search System")
@@ -453,6 +669,9 @@ def main():
     print("search.load_csv_file('kjvscriptures.csv', 'KJV Scriptures')")
     print("search.load_csv_file('ldsscriptures.csv', 'LDS Scriptures')")
     print("search.interactive_mode()")
+
+
+
 
 if __name__ == "__main__":
     main()
